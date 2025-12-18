@@ -3,6 +3,12 @@ local nativefs = require("nativefs")
 Brainstorm.INITIALIZED = true
 Brainstorm.VER = "Brainstorm v1.1.0-alpha"
 
+-- Auto-save state tracking
+Brainstorm.AUTOSAVE = {
+	lastSavedAnte = 0,
+	enabled = true
+}
+
 function Brainstorm.update(dt)
 	if Brainstorm.AUTOREROLL.autoRerollActive then
 		Brainstorm.AUTOREROLL.autoRerollFrames = (Brainstorm.AUTOREROLL.autoRerollFrames or 0)
@@ -24,6 +30,30 @@ function Brainstorm.update(dt)
 			Brainstorm.AUTOREROLL.rerollText = Brainstorm.attention_text({
 				scale = 1.4, text = "Rerolling...", align = 'cm', offset = {x = 0,y = -3.5},major = G.STAGE == G.STAGES.RUN and G.play or G.title_top
 			})
+		end
+	end
+
+	-- Check for ante changes and auto-save
+	if Brainstorm.AUTOSAVE.enabled then
+		Brainstorm.check_auto_save()
+	end
+end
+
+-- Auto-save function
+function Brainstorm.check_auto_save()
+	-- Only auto-save during an active run with valid save data
+	if G.STAGE == G.STAGES.RUN and G.GAME and G.GAME.round_resets and G.ARGS and G.ARGS.save_run then
+		local currentAnte = G.GAME.round_resets.ante
+
+		-- Check if we've reached a new ante and it's within valid save slots (1-5)
+		if currentAnte and currentAnte > Brainstorm.AUTOSAVE.lastSavedAnte and currentAnte <= 5 then
+			-- Save to the slot corresponding to the ante number
+			local saveSlot = tostring(currentAnte)
+			compress_and_save(G.SETTINGS.profile .. "/" .. "saveState" .. saveSlot .. ".jkr", G.ARGS.save_run)
+			saveManagerAlert("Auto-saved to slot [" .. saveSlot .. "] at Ante " .. currentAnte)
+
+			-- Update the last saved ante
+			Brainstorm.AUTOSAVE.lastSavedAnte = currentAnte
 		end
 	end
 end

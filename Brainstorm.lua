@@ -12,6 +12,10 @@ function initBrainstorm()
 			Brainstorm.SETTINGS = settings_file
 		end
 	end
+	-- Load autosave settings
+	if Brainstorm.SETTINGS and Brainstorm.SETTINGS.autosave then
+		Brainstorm.AUTOSAVE.enabled = Brainstorm.SETTINGS.autosave.enabled
+	end
   _RELEASE_MODE = not Brainstorm.SETTINGS.debug_mode
 end
 

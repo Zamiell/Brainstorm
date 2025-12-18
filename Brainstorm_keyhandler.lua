@@ -26,6 +26,8 @@ function Brainstorm.key_press_update(key)
 				savetext = G.SAVED_GAME,
 			})
 			saveManagerAlert("Loaded save from slot [" .. k .. "]")
+			-- Reset auto-save tracking when loading a save state
+			Brainstorm.AUTOSAVE.lastSavedAnte = 0
 		end
   end
 	--  FastReroll
