@@ -3,7 +3,7 @@ local nativefs = require("nativefs")
 
 Brainstorm.AUTOREROLL = {}
 
-local saveKeys = { "1", "2", "3", "4", "5" }
+local saveKeys = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }
 
 function Brainstorm.key_press_update(key)
 	-- Brainstorm Key Handler

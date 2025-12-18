@@ -45,14 +45,18 @@ function Brainstorm.check_auto_save()
 	if G.STAGE == G.STAGES.RUN and G.GAME and G.GAME.round_resets and G.ARGS and G.ARGS.save_run then
 		local currentAnte = G.GAME.round_resets.ante
 
-		-- Check if we've reached a new ante and it's within valid save slots (1-5)
-		if currentAnte and currentAnte > Brainstorm.AUTOSAVE.lastSavedAnte and currentAnte <= 5 then
+		-- Detect if we're in the shop (blind selection state)
+		-- G.STATE == 5 indicates the shop/blind selection screen
+		local inShop = (G.STATE == 5)
+
+		-- If we've reached a new ante (2-9), we're in the shop, and haven't saved yet for this ante
+		if currentAnte and currentAnte >= 2 and currentAnte > Brainstorm.AUTOSAVE.lastSavedAnte and currentAnte <= 9 and inShop then
 			-- Save to the slot corresponding to the ante number
 			local saveSlot = tostring(currentAnte)
 			compress_and_save(G.SETTINGS.profile .. "/" .. "saveState" .. saveSlot .. ".jkr", G.ARGS.save_run)
-			saveManagerAlert("Auto-saved to slot [" .. saveSlot .. "] at Ante " .. currentAnte)
+			saveManagerAlert("Auto-saved to slot [" .. saveSlot .. "] at Ante " .. currentAnte .. " (Shop)")
 
-			-- Update the last saved ante
+			-- Update the last saved ante so we don't save again for this ante
 			Brainstorm.AUTOSAVE.lastSavedAnte = currentAnte
 		end
 	end
